@@ -1,0 +1,159 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500);
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*:focus {
+    outline: none;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #32857496;
+      /* background: #cdfff5; */
+    height: 100vh;
+    width: 100vw;
+    font-size: 16px;
+    color: #222;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+}
+
+.registration-box{
+    display: flex;
+    background-color: #fff;
+    width: 70vw;
+    height: 80vh;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.title{
+    margin: 5vw;
+}
+
+.form{
+    width: 45vw;
+    height: 80vh;
+}
+
+.image{
+    width: 25vw;
+    height: 80vh;
+}
+
+.header{
+    width: 45vw;
+    height: 10vh;
+}
+
+h1{
+    font-weight: 300;
+    font-size: 28px;
+    font-family: 'Roboto', sans-serif;
+    padding: 3vh 0 0 2.4vw;
+}
+
+.content{
+    display: flex;
+    width: 45vw;
+    height: 70vh;
+}
+
+.left, .right{
+    display: flex;
+    flex-direction: column;
+    width: 22.5vw;
+    height: 70vh;
+    align-items: center;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="file"],
+input[type="password"],
+input[type="date"],
+select {
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    padding: 4px;
+    border: none;
+    border-bottom: 1px solid #AAA;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    width: 18vw;
+    height: 38px;
+    transition: 0.2s ease;
+}
+
+input[type="date"],select{
+    font-weight: 300;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="file"]:focus,
+input[type="password"]:focus,
+input[type="date"]:focus,
+select:focus{
+    border-bottom: 2px solid #16a085;
+    transition: 0.2s ease;
+}
+
+
+input[type="submit"] {
+    position: relative;
+    top: 3vh;
+    right: 5.2vw;
+    width: 120px;
+    height: 32px;
+    background: #16a085;
+    border: none;
+    border-radius: 2px;
+    color: #FFF;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: 0.1s ease;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover,
+input[type="submit"]:focus {
+  opacity: 0.8;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: 0.1s ease;
+}
+
+input[type="submit"]:active {
+  opacity: 1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  transition: 0.1s ease;
+}
+
+#bg{
+    width: 25vw;
+    height: 80vh;
+}
+
+#logo{
+    position: relative;
+
+    /* left: 7.5vw;
+    bottom: 52vh;
+    width: 10vw;
+    height: 20vh; */
+
+    width: 4vw;
+    height: 8vh;
+    right: 5vw;
+    bottom: 79vh;
+}
