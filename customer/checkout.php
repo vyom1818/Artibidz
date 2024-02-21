@@ -80,36 +80,27 @@
 	<!-- Page -->
 	<div class="page-area cart-page spad">
 		<div class="container">
-			<form class="checkout-form">
+			<form class="checkout-form" action="payment.php" method="post">
 				<div class="row">
 					<div class="col-lg-6">
 						<h4 class="checkout-title">Billing Address</h4>
 						<div class="row">
 							<div class="col-md-6">
-								<input type="text" placeholder="First Name *">
+								<input type="text" placeholder="Name *" name="nm">
 							</div>
-							<div class="col-md-6">
-								<input type="text" placeholder="Last Name *">
-							</div>
-							<div class="col-md-12">
-								<input type="text" placeholder="Company">
-								<select>
-									<option>Country *</option>
-									<option>USA</option>
-									<option>UK</option>
-									<option>BANGLADESH</option>
+							
+							
+								<input type="text" placeholder="Address *" name="address">
+								
+								<input type="text" placeholder="Zipcode *" name="pincode">
+								<select name="state">
+									<option>State</option>
 								</select>
-								<input type="text" placeholder="Address *">
-								<input type="text">
-								<input type="text" placeholder="Zipcode *">
-								<select>
-									<option>City/Town *</option>
+								<select name="city">
+									<option>City</option>
 								</select>
-								<select>
-									<option>Province *</option>
-								</select>
-								<input type="text" placeholder="Phone no *">
-								<input type="email" placeholder="Email Address *">
+								<input type="text" placeholder="Phone no *" name="no">
+								<input type="email" placeholder="Email Address *" name="email">
 								<div class="checkbox-items">
 									<div class="ci-item">
 										<input type="checkbox" name="a" id="tandc">

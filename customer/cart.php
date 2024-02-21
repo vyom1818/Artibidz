@@ -1,11 +1,19 @@
+<?php
+include 'functions.php';
+$conn = connectToDatabase();
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
-	<title>The Plaza - eCommerce Template</title>
+	<title>Artibidz - eCommerce Template</title>
 	<meta charset="UTF-8">
 	<meta name="description" content="The Plaza eCommerce Template">
 	<meta name="keywords" content="plaza, eCommerce, creative, html">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
 	<!-- Favicon -->   
 	<link href="img/favicon.ico" rel="shortcut icon"/>
 
@@ -25,130 +33,212 @@
 	  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
 
+	<style>
+		.header-section{
+			background:#00000070;
+			padding-bottom:3vh;
+		}
+		.dd{
+	display: inline-block;
+	font-size: 14px;
+	text-transform: uppercase;
+	font-weight: 600;
+	color: #fff;
+	/* padding: 8px 5px 0; */
+	margin-left: 50px;
+	background:transparent;
+	border: 0;
+	position: relative;
+	bottom: 9.5px;
+}
+
+.dropdown-menu{
+	flex-direction: column;
+	background: #00000070;
+	width: 2vw;
+	height: 15vh;
+	border: 0
+}
+
+.dropdown-item{
+	margin: 0;
+	padding: 0;
+	width: 0;
+}
+
+a.dropdown-item.dda{
+	margin: 0;
+	height: 2vh;
+	width: 7vw;
+}
+
+li.ddi{
+	height: 4vh;
+	width: 10vw;
+}
+
+.dropdown-item:focus, .dropdown-item:hover {
+	color:rgba(255, 255, 255, 0.803);
+	background: none;
+}
+
+</style>
+
 </head>
 <body>
+
 	<!-- Page Preloder -->
 	<div id="preloder">
 		<div class="loader"></div>
 	</div>
 	
 	<!-- Header section -->
-	<header class="header-section header-normal">
+	<header class="header-section">
 		<div class="container-fluid">
 			<!-- logo -->
 			<div class="site-logo">
-				<img src="img/logo.png" alt="logo">
+				<!-- <img src="img/artibidz-logo.png" alt="logo"> -->
 			</div>
 			<!-- responsive -->
 			<div class="nav-switch">
 				<i class="fa fa-bars"></i>
 			</div>
 			<div class="header-right">
-				<a href="cart.html" class="card-bag"><img src="img/icons/bag.png" alt=""><span>2</span></a>
-				<a href="#" class="search"><img src="img/icons/search.png" alt=""></a>
+				<a href="cart.php" class="card-bag"><img src="img/icons/bag.png" alt=""><span>2</span></a>
+				<a href="#" class="search" onclick="performSearch()"><img src="img/icons/search.png" alt=""></a>
+				<input type="search" name="search" id="search" placeholder="Search..." style="width:6vw;">
 			</div>
 			<!-- site menu -->
-			<ul class="main-menu">
-				<li><a href="index.html">Home</a></li>
-				<li><a href="#">Woman</a></li>
-				<li><a href="#">Man</a></li>
-				<li><a href="#">LookBook</a></li>
-				<li><a href="#">Blog</a></li>
-				<li><a href="contact.html">Contact</a></li>
-			</ul>
+			<!-- site menu -->
+<ul class="main-menu">
+    <li><a href="index.php">Home</a></li>
+    
+    <!-- Add the following code for the Category dropdown -->
+	<!-- Modify the HTML to display the categories and subcategories -->
+	<li>
+    <div class="dropdown mt-3">
+        <button class="dropdown-toggle dd" type="button" data-bs-toggle="dropdown" id="category-dropdown">
+            Category
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="category-dropdown">
+           <?php
+		     displayCategories($conn);
+			 ?>
+        </ul>
+    </div>
+</li>
+
+
+    <!-- End of Category dropdown -->
+
+    <!-- Other menu items -->
+    <li><a href="#">Auction</a></li>
+    <li><a href="#">Blog</a></li>
+    <li><a href="contact.php">Contact</a></li>
+</ul>
+
 		</div>
 	</header>
 	<!-- Header section end -->
 
 
-	<!-- Page Info -->
-	<div class="page-info-section page-info">
-		<div class="container">
-			<div class="site-breadcrumb">
-				<a href="">Home</a> / 
-				<a href="">Sales</a> / 
-				<a href="">Bags</a> / 
-				<span>Cart</span>
-			</div>
-			<img src="img/page-info-art.png" alt="" class="page-info-art">
-		</div>
-	</div>
-	<!-- Page Info end -->
 
+	
 
-	<!-- Page -->
-	<div class="page-area cart-page spad">
-		<div class="container">
-			<div class="cart-table">
-				<table>
-					<thead>
-						<tr>
-							<th class="product-th">Product</th>
-							<th>Price</th>
-							<th>Quantity</th>
-							<th class="total-th">Total</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td class="product-col">
-								<img src="img/product/cart.jpg" alt="">
-								<div class="pc-title">
-									<h4>Black Shoulder Bag</h4>
-									<a href="#">Edit Product</a>
-								</div>
-							</td>
-							<td class="price-col">$59.90</td>
-							<td class="quy-col">
-								<div class="quy-input">
-									<span>Qty</span>
-									<input type="number" value="01">
-								</div>
-							</td>
-							<td class="total-col">$59.90</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="row cart-buttons">
-				<div class="col-lg-5 col-md-5">
-					<div class="site-btn btn-continue">Continue shooping</div>
-				</div>
-				<div class="col-lg-7 col-md-7 text-lg-right text-left">
-					<div class="site-btn btn-clear">Clear cart</div>
-					<div class="site-btn btn-line btn-update">Update Cart</div>
-				</div>
-			</div>
-		</div>
+<!-- Page -->
+<div class="page-area cart-page spad">
+    <div class="container">
+        <div class="cart-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="product-th">Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Check if cart is not empty
+                    if (!empty($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $key => $value) {
+                            // Skip items that do not belong to the logged-in user
+                            if ($value['user_id'] != $_SESSION['user_id']) {
+                                continue;
+                            }
+
+                            // Fetch art details from the database
+                            $artId = $value['art_id'];
+                            $sql = "SELECT * FROM art WHERE art_id = $artId";
+                            $result = $conn->query($sql);
+                            $row = $result->fetch_assoc();
+
+                            // Fetch art image path from art_image table
+                            $artImage = '';
+                            $imageSql = "SELECT art_image FROM art_image WHERE art_id = $artId LIMIT 1";
+                            $imageResult = $conn->query($imageSql);
+                            if ($imageResult->num_rows > 0) {
+                                $imageRow = $imageResult->fetch_assoc();
+                                $artImage = $imageRow['art_image'];
+                            }
+
+                            // Calculate total price
+                            $totalPrice = $row['art_amt'] * $value['art_qty'];
+                            ?>
+                            <tr>
+                                <td class="product-col">
+                                    <img src="../<?php echo $artImage; ?>" alt="">
+                                    <div class="pc-title">
+                                        <h4><?php echo $row['art_name']; ?></h4>
+                                        <a href="#">Edit Product</a>
+                                    </div>
+                                </td>
+                                <td class="price-col">&#8377;<?php echo $row['art_amt']; ?></td>
+                                <td class="quy-col">
+                                    <div class="quy-input">
+                                        <input id="art_qty_<?php echo $value['art_id']; ?>" type="number" value="<?php echo $value['art_qty']; ?>" min="1" max="<?php echo $row['art_qty']; ?>">
+                                    </div>
+                                </td>
+                                <td class="total-col">&#8377;<span id="total_price_<?php echo $value['art_id']; ?>"><?php echo $totalPrice; ?></span></td>
+                            </tr>
+                            <script>
+                                function updateCart(artId) {
+                                    var qtyInput = document.getElementById('art_qty_' + artId);
+                                    var totalSpan = document.getElementById('total_price_' + artId);
+                                    var qty = parseInt(qtyInput.value);
+                                    var price = <?php echo $row['art_amt']; ?>;
+                                    var totalPrice = qty * price;
+                                    totalSpan.innerText = totalPrice;
+                                }
+                            </script>
+                        <?php }
+                    } else { ?>
+                        <tr>
+                            <td colspan="4">Cart is empty</td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row cart-buttons">
+            <div class="col-lg-5 col-md-5">
+                <div class="site-btn btn-continue">Continue shopping</div>
+            </div>
+            <div class="col-lg-7 col-md-7 text-lg-right text-left">
+                <div class="site-btn btn-clear">Clear cart</div>
+                <!-- You can pass the art_id to the updateCart function for the specific item -->
+                <div class="site-btn btn-line btn-update" onclick="updateCart(<?php echo $value['art_id']; ?>)">Update Cart</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 		<div class="card-warp">
 			<div class="container">
 				<div class="row">
 					<div class="col-lg-4">
-						<div class="shipping-info">
-							<h4>Shipping method</h4>
-							<p>Select the one you want</p>
-							<div class="shipping-chooes">
-								<div class="sc-item">
-									<input type="radio" name="sc" id="one">
-									<label for="one">Next day delivery<span>$4.99</span></label>
-								</div>
-								<div class="sc-item">
-									<input type="radio" name="sc" id="two">
-									<label for="two">Standard delivery<span>$1.99</span></label>
-								</div>
-								<div class="sc-item">
-									<input type="radio" name="sc" id="three">
-									<label for="three">Personal Pickup<span>Free</span></label>
-								</div>
-							</div>
-							<h4>Cupon code</h4>
-							<p>Enter your cupone code</p>
-							<div class="cupon-input">
-								<input type="text">
-								<button class="site-btn">Apply</button>
-							</div>
-						</div>
-					</div>
 					<div class="offset-lg-2 col-lg-6">
 						<div class="cart-total-details">
 							<h4>Cart total</h4>
@@ -158,7 +248,7 @@
 								<li>Shipping<span>Free</span></li>
 								<li class="total">Total<span>$59.90</span></li>
 							</ul>
-							<a class="site-btn btn-full" href="checkout.html">Proceed to checkout</a>
+							<a class="site-btn btn-full" href="checkout.php">Proceed to checkout</a>
 						</div>
 					</div>
 				</div>
@@ -185,30 +275,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="col-lg-2 col-md-4 col-sm-6">
-					<div class="footer-widget">
-						<h6 class="fw-title">usefull Links</h6>
-						<ul>
-							<li><a href="#">Partners</a></li>
-							<li><a href="#">Bloggers</a></li>
-							<li><a href="#">Support</a></li>
-							<li><a href="#">Terms of Use</a></li>
-							<li><a href="#">Press</a></li>
-						</ul>
-					</div>
-				</div>
-				<div class="col-lg-2 col-md-4 col-sm-6">
-					<div class="footer-widget">
-						<h6 class="fw-title">Sitemap</h6>
-						<ul>
-							<li><a href="#">Partners</a></li>
-							<li><a href="#">Bloggers</a></li>
-							<li><a href="#">Support</a></li>
-							<li><a href="#">Terms of Use</a></li>
-							<li><a href="#">Press</a></li>
-						</ul>
-					</div>
-				</div>
+				
 				<div class="col-lg-2 col-md-4 col-sm-6">
 					<div class="footer-widget">
 						<h6 class="fw-title">Shipping & returns</h6>
@@ -239,19 +306,18 @@
 	<!-- Footer top section end -->	
 
 
-	<!-- Footer section -->
-	<footer class="footer-section">
-		<div class="container">
-			<p class="copyright">
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-</p>
-		</div>
-	</footer>
-	<!-- Footer section end -->
 
 
+<script>
+    function updateCart(artId) {
+        var qtyInput = document.getElementById('art_qty_' + artId);
+        var totalSpan = document.getElementById('total_price_' + artId);
+        var qty = parseInt(qtyInput.value);
+        var price = <?php echo $row['art_amt']; ?>;
+        var totalPrice = qty * price;
+        totalSpan.innerText = totalPrice;
+    }
+</script>
 	<!--====== Javascripts & Jquery ======-->
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
@@ -260,5 +326,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	<script src="js/sly.min.js"></script>
 	<script src="js/jquery.nicescroll.min.js"></script>
 	<script src="js/main.js"></script>
+	<script src="js/search.js"></script>
+	<script src="js/category.js"></script>
     </body>
 </html>

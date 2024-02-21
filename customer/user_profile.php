@@ -2,12 +2,6 @@
 session_start();
 $cn = mysqli_connect("localhost", "root", "", "artibidz") or die("Check connection");
 
-// Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../Login/login.php"); // Redirect to login page if not logged in
-    exit();
-}
-
 // Assuming user_id is set in the session
 $user_id = $_SESSION['user_id'];
 
@@ -17,8 +11,6 @@ $resultUser = mysqli_query($cn, $sqlUser);
 
 // Check if the user exists and has the correct user_type
 $user = mysqli_fetch_assoc($resultUser);
-
-
 
 // Handle form submission for profile picture upload
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
@@ -63,66 +55,90 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
     <title>User Profile with Images</title>
     <style>
         /* Your CSS styles here */
-        .image-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
         }
 
-        .image-gallery img {
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .image-wrapper img {
             max-width: 200px;
             height: auto;
+            border-radius: 50%;
+        }
+
+        form {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         .user-info-table {
+            width: 100%;
             border-collapse: collapse;
-            width: 80%;
-            margin-top: 20px;
-            text-align: left;
         }
 
         .user-info-table th,
         .user-info-table td {
-            border: 1px solid #ddd;
             padding: 8px;
+            border-bottom: 1px solid #ddd;
         }
 
         .user-info-table th {
             background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        .user-info-table td {
+            text-align: left;
         }
 
         .anchor {
-            text-decoration: none;
             color: blue;
+            text-decoration: none;
+            margin-right: 10px;
         }
     </style>
 </head>
 
 <body>
-    <center>
+    <div class="container">
         <h1>User Profile</h1>
 
-        <?php
-        // Display user profile details
-        if ($user) {
-            echo "<img src='../{$user['profile_pic']}' alt='{$user['profile_pic']}' width='100' height='100' />";
-        ?>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
-                <h2>Update Profile Picture</h2>
-                <input type="file" name="profile_pic" accept="image/*" required>
-                <input type="submit" value="Upload" name="submit">
-            </form>
+        <?php if ($user) : ?>
+            <div class="image-wrapper">
+                <?php if (!empty($user['profile_pic'])) : ?>
+                    <img src="../<?php echo $user['profile_pic']; ?>" alt="Profile Picture">
+                <?php else : ?>
+                    <p>No profile picture available</p>
+                <?php endif; ?>
+            </div>
 
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                <input type="submit" name="remove_profile_pic" value="Remove Profile Picture">
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                <input type="file" name="profile_pic" accept="image/*" required>
+                <input type="submit" value="Upload">
             </form>
 
             <!-- Display user information -->
             <h2>User Information</h2>
             <table class="user-info-table">
-                <th>First Name</th>
-                <td><?php echo $user['fname']; ?></td>
+                <tr>
+                    <th>First Name</th>
+                    <td><?php echo $user['fname']; ?></td>
                 </tr>
                 <tr>
                     <th>Last Name</th>
@@ -143,16 +159,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
                 <tr>
                     <th>Actions</th>
                     <td>
-                        <a class="anchor" href="order.php">My Orders</a> |
-                        <a class="anchor" href="edit_user_profile.php">Edit Profile</a> |
+                        <a class="anchor" href="order.php">My Orders</a>
+                        <a class="anchor" href="edit_user_profile.php">Edit Profile</a>
                         <a class="anchor" href="delete_user_profile.php">Delete Profile</a>
                     </td>
                 </tr>
             </table>
-
-            <?php }
-        ?>
-    </center>
+        <?php else : ?>
+            <p>User not found or not a customer.</p>
+        <?php endif; ?>
+    </div>
 </body>
 
 </html>
+

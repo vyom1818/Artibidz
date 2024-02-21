@@ -2167,7 +2167,29 @@ input[type="search"] {
 	font-family: 'Raleway', sans-serif;
 }
 
-  ::placeholder {
+::placeholder {
 	color: #fff;
 	font-family: 'Raleway', sans-serif;
   }
+.pagination {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pagination a {
+    color: #333;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.pagination a.active {
+    background-color: #333;
+    color: white;
+}
+
+.pagination a:hover:not(.active) {background-color: #ddd;}
+
+.prev, .next {
+    margin: 0 10px;
+}

@@ -331,7 +331,7 @@
     ?>
 </td>
 <?php
-        
+         
         // echo "<td><a href='edit_city.php?city_id=$row[art_id]'><u>Edit</u></a> | <a href='del_art.php?art_id=$row[art_id]'><u>Delete</u></a></td>";
         echo "</tr>";
         echo "</tbody>";

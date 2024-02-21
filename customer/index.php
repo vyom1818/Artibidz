@@ -1,36 +1,8 @@
 <?php
-// Add this at the top of your index.php file, before the <!DOCTYPE html> declaration
-// Replace 'your_database_host', 'your_database_username', 'your_database_password', and 'your_database_name' with your actual database credentials
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "artibidz";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Handle search
-if(isset($_GET['search'])){
-    $search = $_GET['search'];
-    $sql = "SELECT art.art_id, art.art_name, art.art_amt, art_image.art_image
-	FROM art
-	INNER JOIN sub_category ON art.sub_cat_id = sub_category.sub_cat_id
-	INNER JOIN category ON sub_category.cat_id = category.cat_id
-	INNER JOIN art_image ON art.art_id = art_image.art_id
-	WHERE category.cat_name LIKE '%$search%' 
-	   OR sub_category.sub_cat_name LIKE '%$search%'
-	   OR art.art_name LIKE '%$search%'
-	GROUP BY art.art_id";
-    $result = $conn->query($sql);
-}
+include 'functions.php';
+$conn = connectToDatabase();
+addToCart($conn);
 ?>
-
 <!DOCTYPE html>
 <html lang="zxx">
 <head>
@@ -54,7 +26,7 @@ if(isset($_GET['search'])){
 	<link rel="stylesheet" href="css/owl.carousel.css"/>
 	<link rel="stylesheet" href="css/style.css"/>
 	<link rel="stylesheet" href="css/animate.css"/>
-
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 	<!--[if lt IE 9]>
 	  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -66,54 +38,103 @@ if(isset($_GET['search'])){
 			background:#00000070;
 			padding-bottom:3vh;
 		}
+
+		.site-logo img{
+			height: 7vh;
+			width: 4vw;
+			position: relative;
+			left: 74px;
+			bottom: 6px;
+		}
+
+		.hs-item .hs-content h2 span {
+			color: #414141;
+			font-size: xxx-large;
+			position: relative;
+			left: 19px;
+			bottom: 21px;
+			border-bottom: 4px solid #414141;
+			border-radius: 4px;
+		}
+		
+		.pagination {
+    		margin-top: 15px;
+    		text-align: center;
+			position:relative;
+			bottom:25px;
+			display:flex;
+			justify-content:space-evenly;
+			align-items:center;
+			width: 50vw;
+    		left: 150px;
+		}
+
+		.pagination a {
+    		color: #333;
+    		padding: 8px 16px;
+    		text-decoration: none;
+    		transition: background-color 0.3s;
+			/* border-bottom:2px solid black; */
+		}
+
+		.pagination a.active {
+    		background-color: #333;
+    		color: white;
+		}
+
+		.pagination a:hover:not(.active) {
+			background-color: #ddd;
+		}
+
+		.prev, .next {
+    		margin:0 10px;
+		}
+
+		/* .dropdown-menu {
+  			display: none;
+		} */
+
 		.dd{
-	display: inline-block;
-	font-size: 14px;
-	text-transform: uppercase;
-	font-weight: 600;
-	color: #fff;
-	/* padding: 8px 5px 0; */
-	margin-left: 50px;
-	background:transparent;
-	border: 0;
-	position: relative;
-	bottom: 9.5px;
-}
+			display:block;
+			margin-top:10px;
+			margin-left:10px;
+		}
 
-.dropdown-menu{
-	flex-direction: column;
-	background: #00000070;
-	width: 2vw;
-	height: 15vh;
-	border: 0
-}
+		.header-section ul li:hover .dropdown-menu {
+  			display: block;
+  			position: absolute;
+			/* margin-left:30vw; */
+			left: 0;
+  			/* top: 100%;*/
+  			background-color: var(--color-black);
+		}
 
-.dropdown-item{
-	margin: 0;
-	padding: 0;
-	width: 0;
-}
+		.header-section ul li:hover .dropdown-menu ul {
+  			display: block;
+  			margin: 10px;
+		}
 
-a.dropdown-item.dda{
-	margin: 0;
-	height: 2vh;
-	width: 7vw;
-}
+		.header-section ul li:hover .dropdown-menu ul li {
+			width: 150px;
+			padding: 10px;
+		}
 
-li.ddi{
-	height: 4vh;
-	width: 10vw;
-}
+		.dropdown-menu-1 {
+			display: none;
+		}
 
-.dropdown-item:focus, .dropdown-item:hover {
-	color:rgba(255, 255, 255, 0.803);
-	background: none;
-}
-
-</style>
+		.dropdown-menu ul li:hover .dropdown-menu-1 {
+			display: block;
+			position: absolute;
+			left: 150px;
+			top: 0;
+			background-color: var(--color-black);
+		}
+	</style>
 
 </head>
 <body>
+
 	<!-- Page Preloder -->
 	<div id="preloder">
 		<div class="loader"></div>
@@ -142,37 +163,70 @@ li.ddi{
     
     <!-- Add the following code for the Category dropdown -->
 	<!-- Modify the HTML to display the categories and subcategories -->
-	<li>
-    <div class="dropdown mt-3">
-        <button class="dropdown-toggle dd" type="button" data-bs-toggle="dropdown" id="category-dropdown">
-            Category
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="category-dropdown">
-            <?php
-            // Fetch categories from the database
-            $categoryQuery = "SELECT * FROM category";
-            $categoryResult = $conn->query($categoryQuery);
+	<li class="dd"><a href="#">Categories <i class="fa-solid fa-angle-down"></i></a>
+            <div class="dropdown-menu">
+                <ul>
+                  <li><a class="dd" href="#">Paintings</a>
+				  <div class="dropdown-menu-1">
+                      <ul>
+                      <li><a href="fetch_arts.php?subcategory=<?php echo urlencode('Oil Painting'); ?>" id="Oil Painting">Oil Painting</a></li>
 
-            if ($categoryResult->num_rows > 0) {
-                while ($categoryRow = $categoryResult->fetch_assoc()) {
-                    $categoryId = $categoryRow['cat_id'];
-                    $categoryName = $categoryRow['cat_name'];
-                    ?>
-                    <li class="ddi">
-                        <a class="dropdown-item dda" href="#" onclick="getSubcategories(<?php echo $categoryId; ?>)">
-                            <?php echo $categoryName; ?>
-                        </a>
-                        <!-- Subcategory dropdown -->
-                        <ul class="dropdown-menu subcategory-dropdown" id="subcategory-dropdown-<?php echo $categoryId; ?>"></ul>
-                    </li>
-                <?php }
-            } else {
-                echo "<li>No categories found</li>";
-            }
-            ?>
-        </ul>
-    </div>
-</li>
+                        <li><a href="#" id="Acrylic painting">Acrylic painting</a></li>
+                        <li><a href="#" id="Spray Painting">Spray Painting</a></li>
+                        <li><a href="#" id="Glass Painting">Glass Painting</a></li>
+                        <li><a href="#" id="Panel Painting">Panel Painting</a></li>
+                        <li><a href="#" id="Nature Painting">Nature Painting</a></li>
+                        <li><a href="#" id="Abstract Art">Abstract Art</a></li>
+                        <li><a href="#" id="Mandala Art">Mandala Art</a></li>
+                      </ul>
+                  </div>
+				  </li>
+                  <li><a class="dd" href="#">Sculpture</a>
+				  <div class="dropdown-menu-1">
+                      <ul>
+                        <li><a href="#" id="figurine">Figurine</a></li>
+                        <li><a href="#" id="Art Objects">Art Objects</a></li>
+                        <li><a href="#" id="Vessels">Vessels</a></li>
+                        <li><a href="#">3D Sculpture</a></li>
+                      </ul>
+                  </div>
+				  </li>
+                  <li><a class="dd" href="#">Calligraphy</a>
+                    <div class="dropdown-menu-1">
+                      <ul>
+                        <li><a href="#">Arabic Calligraphy</a></li>
+                        <li><a href="#">Brush Calligraphy</a></li>
+                        <li><a href="#">Sanskrit Calligraphy</a></li>
+                      </ul>
+                    </div>
+                  </li>
+                  <li><a class="dd" href="#">Resin Art</a>
+				  <div class="dropdown-menu-1">
+                      <ul>
+                        <li><a href="#">Resin Wall Art</a></li>
+                        <li><a href="#">Resin Clock</a></li>
+                        <li><a href="#">Resin Jewellery</a></li>
+                      </ul>
+                    </div>
+				  </li>
+                  <li><a class="dd" href="#">Sketching</a>
+				   <div class="dropdown-menu-1">
+                      <ul>
+                        <li><a href="#">Potrait Sketching</a></li>
+                      </ul>
+                    </div>
+				  </li>
+                  <li><a class="dd" href="#">Fine Art Ceramics</a>
+				    <div class="dropdown-menu-1">
+                      <ul>
+                        <li><a href="#">Wooden Pots</a></li>
+                        <li><a href="#">Jasperware</a></li>
+                      </ul>
+                    </div>
+				  </li>
+                </ul>
+              </div>
+    </li>
 
 
     <!-- End of Category dropdown -->
@@ -215,200 +269,82 @@ li.ddi{
 	</section>
 	<!-- Hero section end -->
 
-	
-	<!-- Intro section -->
-	<!-- <section class="intro-section spad pb-0">
-		<div class="section-title">
-			<h2>pemium products</h2>
-			<p>We recommend</p>
-		</div>
-		<div class="intro-slider">
-			<ul class="slidee">
-				<li>
-					<div class="intro-item">
-						<figure>
-							<img src="img/intro/1.jpg" alt="#">
-						</figure>
-						<div class="product-info">
-							<h5>Pink Sunglasses</h5>
-							<p>$319.50</p>
-							<a href="#" class="site-btn btn-line">ADD TO CART</a>
-						</div>
-					</div>
-				</li>
-				<li>
-					<div class="intro-item">
-						<figure>
-							<img src="img/intro/2.jpg" alt="#">
-						</figure>
-						<div class="product-info">
-							<h5>Black Nighty</h5>
-							<p>$319.50</p>
-							<a href="#" class="site-btn btn-line">ADD TO CART</a>
-						</div>
-					</div>
-				</li>
-				<li>
-					<div class="intro-item">
-						<figure>
-							<img src="img/intro/3.jpg" alt="#">
-							<div class="bache">NEW</div>
-						</figure>
-						<div class="product-info">
-							<h5>Yellow Sholder bag</h5>
-							<p>$319.50</p>
-							<a href="#" class="site-btn btn-line">ADD TO CART</a>
-						</div>
-					</div>
-				</li>
-				<li>
-					<div class="intro-item">
-						<figure>
-							<img src="img/intro/4.jpg" alt="#">
-						</figure>
-						<div class="product-info">
-							<h5>Yellow Sunglasses</h5>
-							<p>$319.50</p>
-							<a href="#" class="site-btn btn-line">ADD TO CART</a>
-						</div>
-					</div>
-				</li>
-				<li>
-					<div class="intro-item">
-						<figure>
-							<img src="img/intro/5.jpg" alt="#">
-						</figure>
-						<div class="product-info">
-							<h5>Black Sholder bag</h5>
-							<p>$319.50</p>
-							<a href="#" class="site-btn btn-line">ADD TO CART</a>
-						</div>
-					</div>
-				</li>
-			</ul>
-		</div>
-		<div class="container">
-			<div class="scrollbar">
-				<div class="handle">
-					<div class="mousearea"></div>
-				</div>
-			</div>
-		</div>
-	</section> -->
-	<!-- Intro section end -->
-
-
-	<!-- Featured section -->
-	<!-- <div class="featured-section spad">
-		<div class="container">
-			<div class="row">
-				<div class="col-md-6">
-					<div class="featured-item">
-						<img src="img/featured/featured-1.jpg" alt="">
-						<a href="#" class="site-btn">see more</a>
-					</div>
-				</div>
-				<div class="col-md-6">
-					<div class="featured-item mb-0">
-						<img src="img/featured/featured-2.jpg" alt="">
-						<a href="#" class="site-btn">see more</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div> -->
-	<!-- Featured section end -->
-
-
 <!-- Product section -->
 <section class="product-section spad">
     <div class="container">
-        <?php if(isset($result) && $result->num_rows > 0): ?>
+        <?php 
+        // Initialize $page variable
+        $page = 1;
+
+        // Handle search
+        list($result, $totalPages) = handleSearch($conn, 20);
+
+        // Set $page variable if it exists
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+
+        if ($result->num_rows > 0): ?>
             <div class="row" id="product-filter">
                 <?php while($row = $result->fetch_assoc()): ?>
                     <div class="mix col-lg-3 col-md-6 best">
                         <div class="product-item">
-                            <figure>
-                                <img src="../<?php echo $row['art_image']; ?>" alt="">
-                                <div class="pi-meta">
-                                    <div class="pi-m-left">
-                                        <img src="img/icons/eye.png" alt="">
-                                        <p>quick view</p>
-                                    </div>
-                                    <div class="pi-m-right">
-                                        <img src="img/icons/heart.png" alt="">
-                                        <p>save</p>
-                                    </div>
-                                </div>
-                            </figure>
+						<figure>
+        				   <img src="../<?php echo $row['art_image']; ?>" alt="">
+         				  <div class="pi-meta">
+	     				  <div class="pi-m-left">
+						 <?php echo "<td><a class='anchor' href='quick_view.php?art_id=$row[art_id]'>"?>
+       					 <img src="img/icons/eye.png" alt="Quick View">
+ 	     				  <p>quick view</p>
+   						 </a>
+							</div>
+							 <div class="pi-m-right">
+            <img src="img/icons/heart.png" alt="">
+            <p>save</p>
+        </div>
+    </div>
+</figure>
                             <div class="product-info">
                                 <h6><?php echo $row['art_name']; ?></h6>
                                 <p>&#8377;<?php echo $row['art_amt']; ?></p>
-                                <a href="#" class="site-btn btn-line">ADD TO CART</a>
+                                  <!-- Add to Cart Form -->
+								  <form method="post" action="index.php">
+                                    <input type="hidden" name="art_id" value="<?php echo $row['art_id']; ?>">
+                                    <button type="submit" name="add_to_cart" class="site-btn btn-line">ADD TO CART</button>
+									
+                                </form>
+                                <!-- End Add to Cart Form -->
                             </div>
                         </div>
                     </div>
                 <?php endwhile; ?>
             </div>
+            <!-- Pagination -->
+            <?php if ($totalPages > 1): ?>
+                <div class="pagination">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?php echo ($page - 1); ?>&search=<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>" class="prev">Previous</a>
+                    <?php endif; ?>
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <a href="?page=<?php echo $i; ?>&search=<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>" class="<?php echo ($page == $i) ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                    <?php endfor; ?>
+                    <?php if ($page < $totalPages): ?>
+                        <a href="?page=<?php echo ($page + 1); ?>&search=<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>" class="next">Next</a>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         <?php else: ?>
             <p>No results found.</p>
         <?php endif; ?>
     </div>
 </section>
+
+
 <!-- Product section end -->
 
 
 
-	<!-- Blog section -->	
-	<!-- <section class="blog-section spad">
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-5">
-					<div class="featured-item">
-						<img src="img/featured/featured-3.jpg" alt="">
-						<a href="#" class="site-btn">see more</a>
-					</div>
-				</div>
-				<div class="col-lg-7">
-					<h4 class="bgs-title">from the blog</h4>
-					<div class="blog-item">
-						<div class="bi-thumb">
-							<img src="img/blog-thumb/1.jpg" alt="">
-						</div>
-						<div class="bi-content">
-							<h5>10 tips to dress like a queen</h5>
-							<div class="bi-meta">July 02, 2018   |   By maria deloreen</div>
-							<a href="#" class="readmore">Read More</a>
-						</div>
-					</div>
-					<div class="blog-item">
-						<div class="bi-thumb">
-							<img src="img/blog-thumb/2.jpg" alt="">
-						</div>
-						<div class="bi-content">
-							<h5>Fashion Outlet products</h5>
-							<div class="bi-meta">July 02, 2018   |   By Jessica Smith</div>
-							<a href="#" class="readmore">Read More</a>
-						</div>
-					</div>
-					<div class="blog-item">
-						<div class="bi-thumb">
-							<img src="img/blog-thumb/3.jpg" alt="">
-						</div>
-						<div class="bi-content">
-							<h5>the little black dress just for you</h5>
-							<div class="bi-meta">July 02, 2018   |   By maria deloreen</div>
-							<a href="#" class="readmore">Read More</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</section> -->
-	<!-- Blog section end -->	
-
-
-	<!-- Footer top section -->	
+<!-- Footer top section -->	
 	<section class="footer-top-section home-footer">
 		<div class="container">
 			<div class="row">
@@ -482,9 +418,6 @@ li.ddi{
 	<footer class="footer-section">
 		<div class="container">
 			<p class="copyright">
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-<!-- Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> -->
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 </p>
 		</div>
 	</footer>
@@ -501,18 +434,11 @@ li.ddi{
 	<script src="js/jquery.nicescroll.min.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/search.js"></script>
-	<script>
-	function getSubcategories(categoryId) {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("subcategory-dropdown-" + categoryId).innerHTML = this.responseText;
-            }
-        };
-        xhttp.open("GET", "get_subcategories.php?category_id=" + categoryId, true);
-        xhttp.send();
-    }
 
-</script>
+	
+<?php
+    // Close connection
+    $conn->close();
+    ?>
 </body>
 </html>	
