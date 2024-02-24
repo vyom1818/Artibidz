@@ -14,7 +14,7 @@ addToCart($conn);
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-	<!-- Favicon -->   
+	<!-- Favicon -->
 	<link href="img/favicon.ico" rel="shortcut icon"/>
 
 	<!-- Google Fonts -->
@@ -56,7 +56,7 @@ addToCart($conn);
 			border-bottom: 4px solid #414141;
 			border-radius: 4px;
 		}
-		
+
 		.pagination {
     		margin-top: 15px;
     		text-align: center;
@@ -139,7 +139,7 @@ addToCart($conn);
 	<div id="preloder">
 		<div class="loader"></div>
 	</div>
-	
+
 	<!-- Header section -->
 	<header class="header-section">
 		<div class="container-fluid">
@@ -160,7 +160,7 @@ addToCart($conn);
 			<!-- site menu -->
 <ul class="main-menu">
     <li><a href="index.php">Home</a></li>
-    
+
     <!-- Add the following code for the Category dropdown -->
 	<!-- Modify the HTML to display the categories and subcategories -->
 	<li class="dd"><a href="#">Categories <i class="fa-solid fa-angle-down"></i></a>
@@ -252,7 +252,7 @@ addToCart($conn);
 						<div class="price">from &#8377;19.90</div>
 						<h2><span>2018</span> <br>summer collection</h2>
 						<a href="" class="site-btn">Shop NOW!</a>
-					</div>	
+					</div>
 				</div>
 			</div>
 			<div class="hs-item">
@@ -262,7 +262,7 @@ addToCart($conn);
 						<div class="price">from $19.90</div>
 						<h2><span>2018</span> <br>summer collection</h2>
 						<a href="" class="site-btn">Shop NOW!</a>
-					</div>	
+					</div>
 				</div>
 			</div>
 		</div>
@@ -272,70 +272,70 @@ addToCart($conn);
 <!-- Product section -->
 <section class="product-section spad">
     <div class="container">
-        <?php 
-        // Initialize $page variable
-        $page = 1;
+        <?php
+// Initialize $page variable
+$page = 1;
 
-        // Handle search
-        list($result, $totalPages) = handleSearch($conn, 20);
+// Handle search
+list($result, $totalPages) = handleSearch($conn, 20);
 
-        // Set $page variable if it exists
-        if (isset($_GET['page'])) {
-            $page = $_GET['page'];
-        }
+// Set $page variable if it exists
+if (isset($_GET['page'])) {
+    $page = $_GET['page'];
+}
 
-        if ($result->num_rows > 0): ?>
+if ($result->num_rows > 0): ?>
             <div class="row" id="product-filter">
-                <?php while($row = $result->fetch_assoc()): ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
                     <div class="mix col-lg-3 col-md-6 best">
                         <div class="product-item">
 						<figure>
-        				   <img src="../<?php echo $row['art_image']; ?>" alt="">
-         				  <div class="pi-meta">
-	     				  <div class="pi-m-left">
-						 <?php echo "<td><a class='anchor' href='quick_view.php?art_id=$row[art_id]'>"?>
-       					 <img src="img/icons/eye.png" alt="Quick View">
- 	     				  <p>quick view</p>
-   						 </a>
-							</div>
-							 <div class="pi-m-right">
-            <img src="img/icons/heart.png" alt="">
-            <p>save</p>
-        </div>
-    </div>
-</figure>
-                            <div class="product-info">
-                                <h6><?php echo $row['art_name']; ?></h6>
+        				   <img src="../<?php echo $row['art_image']; ?>" alt="" style="height:200px; object-fit:'cover'">
+         				 	 <div class="pi-meta">
+	     				  		<div class="pi-m-left">
+						 		<?php echo "<td><a class='anchor' href='quick_view.php?art_id=$row[art_id]'>" ?>
+       					 			<img src="img/icons/eye.png" alt="Quick View">
+ 	     				  			<p>quick view</p>
+   						 			</a>
+								</div>
+								<div class="pi-m-right">
+            						<img src="img/icons/heart.png" alt="">
+            						<p>save</p>
+        						</div>
+    						</div>
+						</figure>
+                        <div class="product-info">
+                            <h6><?php echo $row['art_name']; ?></h6>
                                 <p>&#8377;<?php echo $row['art_amt']; ?></p>
                                   <!-- Add to Cart Form -->
 								  <form method="post" action="index.php">
                                     <input type="hidden" name="art_id" value="<?php echo $row['art_id']; ?>">
                                     <button type="submit" name="add_to_cart" class="site-btn btn-line">ADD TO CART</button>
-									
+
                                 </form>
                                 <!-- End Add to Cart Form -->
                             </div>
                         </div>
                     </div>
-                <?php endwhile; ?>
+                <?php endwhile;?>
             </div>
             <!-- Pagination -->
             <?php if ($totalPages > 1): ?>
                 <div class="pagination">
                     <?php if ($page > 1): ?>
                         <a href="?page=<?php echo ($page - 1); ?>&search=<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>" class="prev">Previous</a>
-                    <?php endif; ?>
+                    <?php endif;?>
                     <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                         <a href="?page=<?php echo $i; ?>&search=<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>" class="<?php echo ($page == $i) ? 'active' : ''; ?>"><?php echo $i; ?></a>
-                    <?php endfor; ?>
+                    <?php endfor;?>
                     <?php if ($page < $totalPages): ?>
                         <a href="?page=<?php echo ($page + 1); ?>&search=<?php echo isset($_GET['search']) ? $_GET['search'] : ''; ?>" class="next">Next</a>
-                    <?php endif; ?>
+                    <?php endif;?>
                 </div>
-            <?php endif; ?>
+            <?php endif;?>
         <?php else: ?>
             <p>No results found.</p>
-        <?php endif; ?>
+        <?php endif;?>
     </div>
 </section>
 
@@ -344,7 +344,7 @@ addToCart($conn);
 
 
 
-<!-- Footer top section -->	
+<!-- Footer top section -->
 	<section class="footer-top-section home-footer">
 		<div class="container">
 			<div class="row">
@@ -390,10 +390,10 @@ addToCart($conn);
 						<h6 class="fw-title">Shipping & returns</h6>
 						<ul>
 							<li><a href="#">About Us</a></li>
-							<li><a href="#">Track Orders</a></li>
-							<li><a href="#">Returns</a></li>
+							<li><a href="">Track Orders</a></li>
+							<li><a href="order_return.php">Returns</a></li>
 							<li><a href="#">Jobs</a></li>
-							<li><a href="#">Shipping</a></li>
+							<li><a href="track_delivery.php">Shipping</a></li>
 							<li><a href="#">Blog</a></li>
 						</ul>
 					</div>
@@ -412,7 +412,7 @@ addToCart($conn);
 			</div>
 		</div>
 	</section>
-	<!-- Footer top section end -->	
+	<!-- Footer top section end -->
 
 		<!-- Footer section -->
 	<footer class="footer-section">
@@ -435,10 +435,10 @@ addToCart($conn);
 	<script src="js/main.js"></script>
 	<script src="js/search.js"></script>
 
-	
+
 <?php
-    // Close connection
-    $conn->close();
-    ?>
+// Close connection
+$conn->close();
+?>
 </body>
-</html>	
+</html>

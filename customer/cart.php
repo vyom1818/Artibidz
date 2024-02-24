@@ -115,18 +115,7 @@ li.ddi{
     
     <!-- Add the following code for the Category dropdown -->
 	<!-- Modify the HTML to display the categories and subcategories -->
-	<li>
-    <div class="dropdown mt-3">
-        <button class="dropdown-toggle dd" type="button" data-bs-toggle="dropdown" id="category-dropdown">
-            Category
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="category-dropdown">
-           <?php
-		     displayCategories($conn);
-			 ?>
-        </ul>
-    </div>
-</li>
+	
 
 
     <!-- End of Category dropdown -->
@@ -156,12 +145,14 @@ li.ddi{
                         <th>Price</th>
                         <th>Quantity</th>
                         <th>Total</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
                     // Check if cart is not empty
                     if (!empty($_SESSION['cart'])) {
+                        $subtotal = 0; // Initialize subtotal
                         foreach ($_SESSION['cart'] as $key => $value) {
                             // Skip items that do not belong to the logged-in user
                             if ($value['user_id'] != $_SESSION['user_id']) {
@@ -185,6 +176,7 @@ li.ddi{
 
                             // Calculate total price
                             $totalPrice = $row['art_amt'] * $value['art_qty'];
+                            $subtotal += $totalPrice; // Add to subtotal
                             ?>
                             <tr>
                                 <td class="product-col">
@@ -201,6 +193,9 @@ li.ddi{
                                     </div>
                                 </td>
                                 <td class="total-col">&#8377;<span id="total_price_<?php echo $value['art_id']; ?>"><?php echo $totalPrice; ?></span></td>
+                                <td class="action-col">
+                                    <div class="remove-item-btn" onclick="removeItem(<?php echo $value['art_id']; ?>)">❌</div>
+                                </td>
                             </tr>
                             <script>
                                 function updateCart(artId) {
@@ -213,9 +208,20 @@ li.ddi{
                                 }
                             </script>
                         <?php }
-                    } else { ?>
+                        // Calculate shipping
+                        $shipping = ($subtotal > 1000) ? 0 : 50;
+                        // Calculate total
+                        $total = $subtotal + $shipping;
+                        $_SESSION['subtotal']=$subtotal;
+                        $_SESSION['shipping']=$shipping;
+                        $_SESSION['total']=$total; 
+                    } else {
+                        $subtotal = 0;
+                        $shipping = 0;
+                        $total = 0;
+                        ?>
                         <tr>
-                            <td colspan="4">Cart is empty</td>
+                            <td colspan="5">Cart is empty</td>
                         </tr>
                     <?php } ?>
                 </tbody>
@@ -224,38 +230,34 @@ li.ddi{
 
         <div class="row cart-buttons">
             <div class="col-lg-5 col-md-5">
-                <div class="site-btn btn-continue">Continue shopping</div>
+                <a href="index.php" class="site-btn btn-continue">Continue shopping</a>
             </div>
+
             <div class="col-lg-7 col-md-7 text-lg-right text-left">
-                <div class="site-btn btn-clear">Clear cart</div>
+                <div class="site-btn btn-clear" onclick="clearCart()">Clear cart</div>
                 <!-- You can pass the art_id to the updateCart function for the specific item -->
                 <div class="site-btn btn-line btn-update" onclick="updateCart(<?php echo $value['art_id']; ?>)">Update Cart</div>
             </div>
         </div>
+
+        <!-- Display subtotal, shipping, and total -->
+        <div class="row cart-total">
+            <div class="col-lg-4 offset-lg-8">
+                <div class="cart-total-details">
+                    <h4>Cart total</h4>
+                    <ul class="cart-total-card">
+                        <li>Subtotal<span>&#8377;<?php echo $subtotal; ?></span></li>
+                        <li>Shipping<span>&#8377;<?php echo $shipping; ?></span></li>
+                        <li class="total">Total<span>&#8377;<?php echo $total; ?></span></li>
+                    </ul>
+                     
+                    
+                    <a class="site-btn btn-full" href="checkout.php">Proceed to checkout</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-		<div class="card-warp">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-4">
-					<div class="offset-lg-2 col-lg-6">
-						<div class="cart-total-details">
-							<h4>Cart total</h4>
-							<p>Final Info</p>
-							<ul class="cart-total-card">
-								<li>Subtotal<span>$59.90</span></li>
-								<li>Shipping<span>Free</span></li>
-								<li class="total">Total<span>$59.90</span></li>
-							</ul>
-							<a class="site-btn btn-full" href="checkout.php">Proceed to checkout</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Page end -->
 
 
 	<!-- Footer top section -->	
@@ -304,20 +306,43 @@ li.ddi{
 		</div>
 	</section>
 	<!-- Footer top section end -->	
-
-
-
-
-<script>
-    function updateCart(artId) {
-        var qtyInput = document.getElementById('art_qty_' + artId);
-        var totalSpan = document.getElementById('total_price_' + artId);
-        var qty = parseInt(qtyInput.value);
-        var price = <?php echo $row['art_amt']; ?>;
-        var totalPrice = qty * price;
-        totalSpan.innerText = totalPrice;
+	<script>
+    function clearCart() {
+        if (confirm("Are you sure you want to clear your cart?")) {
+            // Send an AJAX request to clear_cart.php
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "clear_cart.php", true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Reload the page after clearing the cart
+                    window.location.reload();
+                }
+            };
+            xhr.send();
+        }
     }
+	
+function removeItem(artId) {
+        if (confirm("Are you sure you want to remove this item from your cart?")) {
+            // Send an AJAX request to remove the item from the cart
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "remove_item.php?art_id=" + artId, true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    // Reload the page after removing the item
+                    window.location.reload();
+                }
+            };
+            xhr.send();
+        }
+    }
+
 </script>
+
+
+	
+
+
 	<!--====== Javascripts & Jquery ======-->
 	<script src="js/jquery-3.2.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>

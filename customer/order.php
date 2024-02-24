@@ -129,7 +129,7 @@
                         <p>Ship Status: <?php echo $row['ship_status']; ?></p>
                         <p>Delivery Date: <?php echo $row['delivery_date']; ?></p>
                         <p>Art Name: <?php echo $row['art_name']; ?></p>
-                      <?php  echo "<img src='../artibidz2/{$row['art_image']}' alt='{$row['art_image']}' width='100' height='100' />";
+                      <?php  echo "<img src='../{$row['art_image']}' alt='{$row['art_image']}' width='100' height='100' />";
                       ?>
                    </div>
                 <?php

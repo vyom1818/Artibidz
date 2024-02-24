@@ -7,9 +7,9 @@ if(isset($_GET['art_id'])) {
     $art_id = $_GET['art_id'];
 
     // SQL query to fetch art details
-    $sqlArtDetails = "SELECT art.*, user.fname AS artist_name 
+    $sqlArtDetails = "SELECT art.*, 
+                     (SELECT fname FROM user WHERE user_id = art.user_id) AS artist_name 
                       FROM art 
-                      INNER JOIN user ON art.art_id = user.user_id 
                       WHERE art.art_id = $art_id";
     
     // Execute the SQL query

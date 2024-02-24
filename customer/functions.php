@@ -128,6 +128,23 @@ function addToCart($conn) {
         exit;
     }
 }
+function clearCart() {
+    // Check if user is logged in
+    if (isset($_SESSION['user_id'])) {
+        // Clear the cart for the logged-in user
+        unset($_SESSION['cart']);
+        
+        // Return a success message
+        return "Cart cleared successfully";
+    } else {
+        // Return an error message if user is not logged in
+        return "User not logged in";
+    }
+}
 
-
+// Check if the clearCart parameter is set and call the function
+if (isset($_GET['clearCart']) && $_GET['clearCart'] == 'true') {
+    echo clearCart();
+}
 ?>
+
