@@ -9,7 +9,7 @@
             $sql = "delete from state where state_id='$state_id'";
 
            $result = mysqli_query($cn,$sql);
-           $_SESSION['msg']="State deleted";
+           $_SESSION['msg']="State Deleted";
           header("Location:state.php");
         ?>
        

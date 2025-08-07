@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,15 +7,14 @@
     <title>Admin Clone</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="stylecity.css">
+    <link href="artibidz-logo.png" rel="shortcut icon"/>
     <script>
         function toggleSidebar() {
             var sidebar = document.getElementById("mySidebar");
             sidebar.style.width = (sidebar.style.width === "20%") ? "110px" : "20%";
         }
     </script>    
-            <?php session_start();
-//include("../includes/connect.php");
- ?>
+
 <style>
 .scrollbox{
     overflow: auto;
@@ -41,6 +41,78 @@
 .logo img{
     margin-top:2vh;
 }
+
+.body-wrapper{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.search{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:#324960;
+    width:74vw;
+    color:white;
+}
+
+.take-input{
+    display:flex;
+    /* justify-content:space-around; */
+    align-items:center;
+    padding:5px;
+}
+
+.take-input-1,
+.take-input-2{
+    padding:5px;
+    /* margin:1vh 2vw; */
+}
+
+.take-input-1 label,
+.take-input-1 label{
+    padding:5px;
+}
+
+.btn-submit{
+    /* width: 73vw; */
+    text-align:center;
+    margin-left:1vw;  
+}
+
+input[type="submit"]{
+    background:#fff;
+    border:1px solid white;
+    height:3vh;
+    width:6vw;
+    border-radius:2px;
+    color:black;
+}
+
+input[type="submit"]:hover{
+    cursor:pointer;
+}
+
+input[type="text"]{
+    background:transparent;
+    border-bottom:1px solid #fff;
+    color:#fff;
+}
+
+select{
+    background:transparent;
+    color:white;
+    border-bottom:1px solid #fff;
+}
+
+.show-result{
+    width: 41vw;
+    text-align: center;
+}
+
 </style>    
 </head>
 <body>
@@ -57,14 +129,14 @@
             <div class="scrollbox-inner">
 
                 <ul class="menu">
-                    <li>
+            <li>
                 <a href="admin.php">
                     <i class="fa-solid fa-house"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="art_show.php">
                     <i class="fa-brands fa-slack"></i>
                     <span>Artifacts</span>
                 </a>
@@ -81,12 +153,12 @@
                     <span>Orders</span>
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="order_return.php">
                 <i class="fa-solid fa-rotate-left"></i>
                     <span>Order Return</span>
                 </a>
-            </li>
+            </li> -->
             <li class="active">
                 <a href="city.php">
                     <i class="fa-solid fa-city"></i>
@@ -118,6 +190,12 @@
                 </a>
             </li>
             <li>
+                <a href="shipping.php">
+                    <i class="fa-solid fa-truck"></i>
+                    <span>Shipping</span>
+                </a>
+            </li>
+            <li>
                 <a href="feedback.php">
                     <i class="fa-regular fa-comment"></i>
                     <span>Feedback</span>
@@ -129,7 +207,7 @@
     <footer>
         <ul class="menu">
             <li>
-                <a href="#">
+                <a href="../login/login.php">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
                 </a>
@@ -146,7 +224,7 @@
                 <span class="path">Artibidz > Dashboard > City </span>
             </div>
             <div class="user-info">
-                <a href="#" class="report-list">Report List</a>
+                <a href="order_report.php" class="report-list">Report List</a>
             </div>
         </div>
 
@@ -159,36 +237,50 @@
             </h1>
 
             <form action="cityins.php" method="post">
-            City:
-            <input class="input-text" type="text" name="city_name" placeholder="Enter City Name" required>
             
-            <select name="state_id" id="">
-            
-            <?php
-            $cn=mysqli_connect("localhost","root","","artibidz") or die("Check connection");
-            $sql="select * from state";
-            $result=mysqli_query($cn,$sql);
-            while($row=mysqli_fetch_array($result))
-            {
-                echo "<option value='${row['state_id']}'>${row['state_name']}</option>";
-            }
+            <div class="take-input">
 
-            ?>
-        </select>
-        
-       <input type="submit" value="submit" name="btn">
-        <br>
+                <div class="take-input-1">
+                    <label>
+                        Enter City:
+                    </label>
+                    <input class="input-text" type="text" name="city_name" required>
+                </div>
+                
+                <div class="take-input-2">
+                    <label>
+                        Select State:
+                    </label>
+                    <select name="state_id" id="">
+                        <?php
+                        $cn=mysqli_connect("localhost","root","","artibidz") or die("Check connection");
+                        $sql="select * from state";
+                        $result=mysqli_query($cn,$sql);
+                        while($row=mysqli_fetch_array($result))
+                        {
+                            echo "<option value='${row['state_id']}'>${row['state_name']}</option>";
+                        }
+                    ?>
+                    </select>
+                </div>
+
+                <div class="btn-submit">
+                    <input type="submit" value="Submit" name="btn">
+                </div>
+            </div>
+        <div class="show-result">
             <?php
-    if(isset($_SESSION['msg'])){
-        echo $_SESSION['msg'];
-    unset ($_SESSION['msg']);
-    }
-    $sql = "select * from city";
-    $result = mysqli_query($cn,$sql);
-    echo "<center>";
-    echo mysqli_num_rows($result)." records found";
-    echo "</center>";
-    ?>
+                if(isset($_SESSION['msg'])){
+                    echo $_SESSION['msg'];
+                    unset ($_SESSION['msg']);
+                }
+                $sql = "select * from city";
+                $result = mysqli_query($cn,$sql);
+                echo"<center>";
+              //  echo mysqli_num_rows($result)." records found";
+                echo"</center>";
+            ?>
+        </div>
     </form>
         </div>
         <div class="display-table">

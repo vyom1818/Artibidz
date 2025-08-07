@@ -9,7 +9,7 @@
             $sql = "delete from city where city_id='$city_id'";
 
            $result = mysqli_query($cn,$sql);
-           $_SESSION['msg']="city deleted";
+           $_SESSION['msg']="City Deleted";
           header("Location:city.php");
         ?>
        

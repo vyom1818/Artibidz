@@ -1,21 +1,11 @@
 <?php
-session_start();
+include 'functions.php';
 
-// Check if user is logged in
-if (isset($_SESSION['user_id']) && isset($_GET['art_id'])) {
-    $artId = $_GET['art_id'];
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $artId = $_POST['art_id'];
 
-    // Loop through the cart and remove the item with the specified art_id
-    foreach ($_SESSION['cart'] as $key => $item) {
-        if ($item['art_id'] == $artId && $item['user_id'] == $_SESSION['user_id']) {
-            unset($_SESSION['cart'][$key]);
-            echo "Item removed successfully";
-            exit;
-        }
-    }
+    removeItemFromCart($artId);
 
-    echo "Item not found in cart";
-} else {
-    echo "User not logged in";
+    echo json_encode(array('message' => 'Item removed successfully'));
 }
 ?>

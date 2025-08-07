@@ -1,4 +1,5 @@
 <?php
+session_start();
 function connectToDatabase() {
     $servername = "localhost";
     $username = "root";
@@ -28,6 +29,9 @@ function handleSearch($conn, $limit = 20) {
             OR sub_category.sub_cat_name LIKE '%$search%'
             OR art.art_name LIKE '%$search%'";
     }
+
+    // Add condition to get only arts available on sale
+    $sql .= " AND art.sale_or_auction = 'Sale'";
 
     $sql .= " GROUP BY art.art_id";
 
@@ -77,7 +81,7 @@ function displayCategories($conn) {
 }
 
 function addToCart($conn) {
-    session_start();
+    // session_start();
 
     if(isset($_POST['add_to_cart'])) {
         // Check if user is logged in
@@ -88,39 +92,22 @@ function addToCart($conn) {
         }
 
         $art_id = $_POST['art_id'];
-
-        // Fetch the art details from the database based on the art_id
-        $art_query = "SELECT * FROM art WHERE art_id = $art_id";
-        $art_result = $conn->query($art_query);
-        $art_row = $art_result->fetch_assoc();
-
-        // Create a new item array to store the art details
-        $item = array(
-            'art_id' => $art_row['art_id'],
-            'art_name' => $art_row['art_name'],
-            'art_amt' => $art_row['art_amt'],
-            'art_qty' => 1, // Initial quantity is 1
-            'user_id' => $_SESSION['user_id'] // Store the user_id with the item
-        );
-
-        // Check if the cart session variable is set
-        if(!isset($_SESSION['cart'])) {
-            $_SESSION['cart'] = array(); // If not, create an empty array
-        }
+        $user_id = $_SESSION['user_id'];
 
         // Check if the art is already in the cart for this user
-        $art_in_cart = false;
-        foreach($_SESSION['cart'] as $key => $cart_item) {
-            if($cart_item['art_id'] == $item['art_id'] && $cart_item['user_id'] == $item['user_id']) {
-                $_SESSION['cart'][$key]['art_qty']++; // If yes, increase the quantity
-                $art_in_cart = true;
-                break;
-            }
-        }
+        $check_query = "SELECT * FROM cart WHERE art_id = $art_id AND user_id = $user_id";
+        $check_result = $conn->query($check_query);
 
-        // If the art is not already in the cart for this user, add it as a new item
-        if(!$art_in_cart) {
-            $_SESSION['cart'][] = $item;
+        if ($check_result->num_rows > 0) {
+            // If the art is already in the cart, update the quantity
+            $cart_item = $check_result->fetch_assoc();
+            $new_qty = $cart_item['cart_art_qty'] + 1;
+            $update_query = "UPDATE cart SET cart_art_qty = $new_qty WHERE cart_id = {$cart_item['cart_id']}";
+            $conn->query($update_query);
+        } else {
+            // If the art is not in the cart, insert a new record
+            $insert_query = "INSERT INTO cart (user_id, art_id, cart_art_qty) VALUES ($user_id, $art_id, 1)";
+            $conn->query($insert_query);
         }
 
         // Redirect back to the index page or wherever you want
@@ -128,23 +115,125 @@ function addToCart($conn) {
         exit;
     }
 }
+
+// Function to get total price for an art
+function getTotalPrice($qty, $price) {
+    return $qty * $price;
+}
+
+// Function to update cart
+function updateCart($artId, $qty) {
+    // session_start();
+    $conn = connectToDatabase();
+    $userId = $_SESSION['user_id'];
+    $updateQuery = "UPDATE cart SET cart_art_qty = $qty WHERE user_id = $userId AND art_id = $artId";
+    $conn->query($updateQuery);
+}
+
+// Function to remove item from cart
+function removeItemFromCart($artId) {
+    // session_start();
+    $conn = connectToDatabase();
+    $userId = $_SESSION['user_id'];
+    $deleteQuery = "DELETE FROM cart WHERE user_id = $userId AND art_id = $artId";
+    $conn->query($deleteQuery);
+}
+
+// Function to clear cart
 function clearCart() {
-    // Check if user is logged in
-    if (isset($_SESSION['user_id'])) {
-        // Clear the cart for the logged-in user
-        unset($_SESSION['cart']);
-        
-        // Return a success message
-        return "Cart cleared successfully";
+    // session_start();
+    $conn = connectToDatabase();
+    $userId = $_SESSION['user_id'];
+    $deleteQuery = "DELETE FROM cart WHERE user_id = $userId";
+    $conn->query($deleteQuery);
+}
+
+// functions.php
+
+function getCartItems($userId) {
+    $conn = connectToDatabase();
+
+    // Prepare SQL query
+    $sql = "SELECT art_id, cart_art_qty FROM cart WHERE user_id = ?";
+
+    // Prepare statement
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+
+    // Bind result variables
+    $stmt->bind_result($artId, $cartArtQty);
+
+    $cartItems = array();
+
+    // Fetch results into an array
+    while ($stmt->fetch()) {
+        $cartItems[] = array(
+            'art_id' => $artId,
+            'cart_art_qty' => $cartArtQty
+        );
+    }
+
+    // Close statement and connection
+    $stmt->close();
+    $conn->close();
+
+    return $cartItems;
+}
+// functions.php
+
+function getArtAmt($artId) {
+    $conn = connectToDatabase();
+
+
+    $sql = "SELECT art_amt FROM art WHERE art_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $artId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return $row['art_amt'];
     } else {
-        // Return an error message if user is not logged in
-        return "User not logged in";
+        return 0; // Return 0 if art_amt not found
     }
 }
 
-// Check if the clearCart parameter is set and call the function
-if (isset($_GET['clearCart']) && $_GET['clearCart'] == 'true') {
-    echo clearCart();
-}
-?>
 
+function getAuctionArts($conn, $perPage) {
+    // Initialize arts array
+    $arts = array();
+
+    // Count total auction arts
+    $sqlCount = "SELECT COUNT(*) AS total FROM art WHERE sale_or_auction = 'Auction'";
+    $resultCount = $conn->query($sqlCount);
+    $totalCount = $resultCount->fetch_assoc()['total'];
+
+    // Calculate total pages
+    $totalPages = ceil($totalCount / $perPage);
+
+    // Get current page
+    $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+    // Calculate offset
+    $offset = ($page - 1) * $perPage;
+
+    // Fetch arts for current page
+    $sql = "SELECT art.*, 
+                (SELECT art_image FROM art_image WHERE art_id = art.art_id LIMIT 1) AS art_image 
+            FROM art 
+            WHERE sale_or_auction = 'Auction'
+            LIMIT $offset, $perPage";
+    $result = $conn->query($sql);
+
+    // Populate arts array
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $arts[] = $row;
+        }
+    }
+
+    // Return arts array and total pages
+    return array($arts, $totalPages);
+}

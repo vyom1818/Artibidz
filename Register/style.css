@@ -14,7 +14,8 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #32857496;
+    /* background: #32857496; */
+    /* background-image: url('bg.mp4'); */
       /* background: #cdfff5; */
     height: 100vh;
     width: 100vw;
@@ -26,7 +27,7 @@ body{
 
 .registration-box{
     display: flex;
-    background-color: #fff;
+    /* background-color: #fff; */
     width: 70vw;
     height: 80vh;
     border-radius: 2px;

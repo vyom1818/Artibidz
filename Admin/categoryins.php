@@ -8,7 +8,7 @@
        $cat_name=$_POST['cat_name'];
        $query="insert into category(cat_name)values ('$cat_name')";
        $result=mysqli_query($cn,$query);
-       $_SESSION['msg']="category inserted";
+       $_SESSION['msg']="Category Inserted";
        header("Location:category.php");
        ?>
     </body>

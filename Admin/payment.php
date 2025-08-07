@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Clone</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styletable.css">
+    <link href="artibidz-logo.png" rel="shortcut icon"/>
     <script>
         function toggleSidebar() {
             var sidebar = document.getElementById("mySidebar");
@@ -78,12 +79,12 @@
                     <span>Orders</span>
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="order_return.php">
                 <i class="fa-solid fa-rotate-left"></i>
                 <span>Order Return</span>
                 </a>
-            </li>
+            </li> -->
             <li>
                 <a href="city.php">
                     <i class="fa-solid fa-city"></i>
@@ -115,6 +116,12 @@
                 </a>
             </li>
             <li>
+                <a href="shipping.php">
+                    <i class="fa-solid fa-truck"></i>
+                    <span>Shipping</span>
+                </a>
+            </li>
+            <li>
                 <a href="feedback.php">
                     <i class="fa-regular fa-comment"></i>
                     <span>Feedback</span>
@@ -126,7 +133,7 @@
         <footer>
             <ul class="menu">
                 <li>
-                    <a href="#">
+                    <a href="../login/login.php">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>Logout</span>
                     </a>
@@ -143,7 +150,7 @@
                 <span class="path">Artibidz > Dashboard > Payment </span>
             </div>
             <div class="user-info">
-                <a href="#" class="report-list">Report List</a>
+                <a href="order_report.php" class="report-list">Report List</a>
             </div>
         </div>
     

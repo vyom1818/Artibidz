@@ -6,6 +6,7 @@
     <title>Admin Clone</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styletable.css">
+    <link href="artibidz-logo.png" rel="shortcut icon"/>
     <script>
         function toggleSidebar() {
             var sidebar = document.getElementById("mySidebar");
@@ -79,12 +80,12 @@
                 <span>Orders</span>
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="order_return.php">
                     <i class="fa-solid fa-rotate-left"></i>
                     <span>Order Return</span>
                 </a>
-            </li>
+            </li> -->
             <li>
                 <a href="city.php">
                     <i class="fa-solid fa-city"></i>
@@ -116,6 +117,12 @@
                 </a>
             </li>
             <li>
+                <a href="shipping.php">
+                    <i class="fa-solid fa-truck"></i>
+                    <span>Shipping</span>
+                </a>
+            </li>
+            <li>
                 <a href="feedback.php">
                     <i class="fa-regular fa-comment"></i>
                     <span>Feedback</span>
@@ -128,7 +135,7 @@
 
             <ul class="menu">
                 <li>
-                    <a href="#">
+                    <a href="../login/login.php">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>Logout</span>
                     </a>
@@ -145,7 +152,7 @@
                 <span class="path">Artibidz > Dashboard > Orders </span>
             </div>
             <div class="user-info">
-                <a href="#" class="report-list">Report List</a>
+                <a href="order_report.php" class="report-list">Report List</a>
             </div>
         </div>
 
@@ -153,23 +160,24 @@
 
             
             
-<?php
- $cn=mysqli_connect("localhost","root","","artibidz") or die("Check connection");
- $sql = "
- SELECT
- orders.order_id,
- art.art_name,
- order_details.order_art_qty,
- orders.total_amt,
- user.username
- FROM
- orders
- JOIN order_details ON orders.order_id = order_details.order_id
- JOIN art ON order_details.art_id = art.art_id
- JOIN user ON orders.user_id = user.user_id
- ";
- 
- 
+        <?php
+$cn=mysqli_connect("localhost","root","","artibidz") or die("Check connection");
+$sql = "
+SELECT
+    orders.order_id,
+    GROUP_CONCAT(art.art_name SEPARATOR ', ') as art_names,
+    GROUP_CONCAT(order_details.order_art_qty SEPARATOR ', ') as order_art_qtys,
+    orders.total_amt,
+    user.username
+FROM
+    orders
+JOIN order_details ON orders.order_id = order_details.order_id
+JOIN art ON order_details.art_id = art.art_id
+JOIN user ON orders.user_id = user.user_id
+GROUP BY orders.order_id
+";
+
+
 $result = mysqli_query($cn, $sql);
 if ($result) {
     echo "<div class='table-wrapper'>
@@ -177,8 +185,8 @@ if ($result) {
     <thead>
     <tr>
     <th>Order ID</th>
-    <th>Art Name</th>
-    <th>Order Art Quantity</th>
+    <th>Art Names</th>
+    <th>Order Art Quantities</th>
     <th>Total Amount</th>
     <th>Username</th>
     </tr>
@@ -188,8 +196,8 @@ if ($result) {
         echo "<tr>
         <tbody>
                 <td>{$row['order_id']}</td>
-                <td>{$row['art_name']}</td>
-                <td>{$row['order_art_qty']}</td>
+                <td>{$row['art_names']}</td>
+                <td>{$row['order_art_qtys']}</td>
                 <td>{$row['total_amt']}</td>
                 <td>{$row['username']}</td>
                 </tr>
@@ -205,6 +213,7 @@ if ($result) {
 
 mysqli_close($cn);
 ?>
+
 
 </div>
 </div>

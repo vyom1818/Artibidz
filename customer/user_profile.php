@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+// Check if the user is not logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location:../Login/login.php");
+    exit();
+}
+
 $cn = mysqli_connect("localhost", "root", "", "artibidz") or die("Check connection");
 
 // Assuming user_id is set in the session
@@ -44,6 +51,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
         echo "Invalid file type. Only png and jpg files are allowed.";
     }
 }
+
+// Handle form submission for removing profile picture
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["remove_profile_pic"])) {
+    // Update database to remove profile picture path
+    $sqlRemovePic = "UPDATE user SET profile_pic=NULL WHERE user_id = $user_id";
+    $resultRemovePic = mysqli_query($cn, $sqlRemovePic);
+
+    if (!$resultRemovePic) {
+        echo "Error removing profile picture: " . mysqli_error($cn);
+    } else {
+        // Delete the profile picture file from the server
+        $filePath = "../images/" . $user['profile_pic']; // Assuming profile_pic stores the file name
+        if (file_exists($filePath) && unlink($filePath)) {
+            echo "Profile picture removed successfully.";
+        } else {
+            echo "Error deleting profile picture file.";
+        }
+        // Redirect to user profile page after successful removal
+        header("Location: user_profile.php");
+        exit();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -52,88 +81,274 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile with Images</title>
+    <title>User Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link href="img/artibidz-logo.png" rel="shortcut icon"/>
     <style>
-        /* Your CSS styles here */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-        }
 
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
+    .profile-head {
+        transform: translateY(5rem)
+    }
 
-        .image-wrapper {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    .cover {
+        background-image: url(https://images.unsplash.com/photo-1530305408560-82d13781b33a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1352&q=80);
+        background-size: cover;
+        background-repeat: no-repeat
+    }
 
-        .image-wrapper img {
-            max-width: 200px;
-            height: auto;
-            border-radius: 50%;
-        }
+    body {
+        /* background: #654ea3;
+        background: linear-gradient(to right, #e96443, #904e95);
+        min-height: 100vh; */
+        overflow-x:hidden;
+        background: #64c5b1;
+        /* rgba(251, 194, 235, 1) */
+        background: linear-gradient(to bottom, #64c5b1, rgba(166, 193, 238, 1));
+        /* background: -webkit-linear-gradient(to right, rgba(251, 194, 235, 1), rgba(166, 193, 238, 1)); */
+    }
 
-        form {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    label{
+        margin-bottom:0;
+    }
 
-        .user-info-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    #remove{
+        width:8.1rem;
+    }
 
-        .user-info-table th,
-        .user-info-table td {
-            padding: 8px;
-            border-bottom: 1px solid #ddd;
-        }
+    .list-inline-item:not(:last-child) {
+        margin-right: 0;
+    }
 
-        .user-info-table th {
-            background-color: #f2f2f2;
-            text-align: left;
-        }
+    #select:hover {
+        color: #fff;
+        background-color: #343a40;
+        border-color: #343a40;
+    }
 
-        .user-info-table td {
-            text-align: left;
-        }
+    .font-italic {
+        margin: 1vh auto;
+    }
 
-        .anchor {
-            color: blue;
-            text-decoration: none;
-            margin-right: 10px;
-        }
+    #opt1 {
+        background-image:url('order.jpg');
+        background-position:bottom;
+        background-size:cover;
+        height: 25vh;
+        width:18vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+    }
+
+    a{
+        text-decoration:none;
+    }
+
+    #opt2 {
+        background-image:url('userprofile2.jpg');
+        background-position:center;
+        background-size:cover;
+        height: 25vh;
+        width:18vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+    }
+
+    #opt3 {
+        background: #be0707;
+        height: 8vh;
+        width:35.5vw;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+    }
+
+    a{
+        text-decoration:none;
+        background:#00425a;
+        color:#fff;
+        padding:5px 15px;
+        border-radius:5px;
+        /* margin:5px; */
+    }
+
+    a:hover{
+        text-decoration:none;
+        color:#f1f1f1;
+    }
+
+    #artwork{
+        height:35vh;
+        width:22vw;
+        padding:5px;
+        border-radius:5px;
+    }
+
+    .opt1{
+        width:88vw;
+    }
+
+    .actions{
+        display:flex;
+        flex-direction:column;
+    }
+
+    .options{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+
+    .op1{
+        background-color:#009688;
+    }
+    .op2{
+        background-color:#5c6bc0;
+    }
+    .op3{
+        background-color:#ba68c8;
+    }
+    .op4{
+        background-color:#F44336;
+    }
+
+    .py-5{
+        padding-bottom:0 !important;
+    }
+    .py-5{
+        padding-top:0 !important;
+    }
+    .py-3{
+        margin: 0 5vw;
+    }
+    .px-4{
+        padding-left:0 !important;
+    }
+    .mx-auto{
+        margin-left:0 !important;
+        margin-right: 0 !important; 
+    }
+    .mb-4{
+        margin-bottom: 2.5rem !important;
+    }
+    .mb-2{
+        margin-left: 5vw;
+    }
+    #whole{
+        width:101vw;
+        height:100vh;
+    }
+    #remove {
+        margin-left: 5vw;
+    }
+    
     </style>
 </head>
 
 <body>
-    <div class="container">
+
+<div class="row py-5 px-4">
+    <div class="col-md-5 mx-auto"> <!-- Profile widget --> 
+        <div id="whole" class="bg-white shadow rounded overflow-hidden"> 
+            <div class="px-4 pt-0 pb-4 cover">
+                <div class="media align-items-end profile-head"> 
+                    <?php if ($user) : ?>
+                        <div class="profile mr-3">
+                            <?php if (!empty($user['profile_pic'])) : ?>
+                                <img src="../<?php echo $user['profile_pic']; ?>" alt="Profile Picture" width="130" class="rounded mb-2 img-thumbnail">
+                                <?php else : ?>
+                                    <img src="../images/836.jpg" alt="Profile Picture" width="130" class="rounded mb-2 img-thumbnail">
+                                    <!-- <p>No profile picture available</p> -->
+                                    <?php endif; ?>
+                                    <!-- <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=80" alt="..." width="130" class="rounded mb-2 img-thumbnail"> -->
+                        <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                        <input type="submit" id="remove" class="btn btn-outline-dark btn-sm" name="remove_profile_pic" value="Remove Picture">
+                        </form>
+                        <!-- <a class="anchor" href="edit_user_profile.php">Edit Profile</a> -->
+                    </div> 
+                    <div class="media-body mb-5 text-white"> 
+                    <h4 class="mt-0 mb-0"><?php echo ucfirst($user['fname']); ?> <?php echo ucfirst($user['lname']); ?></h4>
+
+                        <p class="small mb-4"> 
+                            <!-- <i class="fas fa-map-marker-alt mr-2"></i> -->
+                            <?php echo $user['username']; ?>
+                        </p> 
+                    </div> 
+                </div> 
+            </div> 
+            
+            <div class="bg-light p-4 d-flex justify-content-end text-center"> 
+                <ul class="list-inline mb-0"> 
+                    <li class="list-inline-item"> 
+                        <!-- <h5 class="font-weight-bold mb-0 d-block">215</h5> -->
+                        <small class="text-muted"> 
+                            <i class="fas fa-image mr-1">
+                            </i>
+                            <form class="py-3" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
+                                <input type="file" id="fileInput" style="display: none;" name="profile_pic" accept=".jpg, .jpeg, .png" required/>
+                                <label for="fileInput" class="customFileButton btn btn-outline-dark btn-sm" id="select">Select Profile Photo</label>
+                                <input type="submit" value="Click Here to Upload" class="customFileButton btn btn-outline-dark btn-sm">
+                            </form>
+                            <!-- <input type="file" name="profile_pic" accept="image/*" required> -->
+                            <!-- Photos -->
+                        </small> 
+                    </li> 
+                    <li class="list-inline-item"> 
+                        <!-- <h5 class="font-weight-bold mb-0 d-block">745</h5>
+                        <small class="text-muted"> 
+                            <i class="fas fa-user mr-1"></i>Followers
+                        </small>  -->
+                    </li> 
+                    <li class="list-inline-item"> 
+                        <!-- <h5 class="font-weight-bold mb-0 d-block">340</h5>
+                        <small class="text-muted"> 
+                            <i class="fas fa-user mr-1"></i>Following
+                        </small>  -->
+                    </li> 
+                </ul> 
+            </div> 
+            
+            <div class="px-4 py-3"> 
+                <h5 class="mb-0">About</h5> 
+                <div class="p-4 rounded shadow-sm bg-light"> 
+                    <p class="font-italic mb-0">Contact No. : <?php echo $user['contact_no']; ?></p> 
+                    <p class="font-italic mb-0">Email Address : <?php echo $user['email_address']; ?></p> 
+                    <p class="font-italic mb-0">Role : Customer</p> 
+                </div> 
+            </div> 
+            
+            <div class="actions px-4 py-3">
+                <h5 class="mb-0">Actions</h5>
+                <div class="options p-4 rounded shadow-sm bg-light">
+                    <a class="op1 anchor" href="order.php">My orders</a>
+                    <!-- <a class="op2 anchor" href="myart.php">My Art</a> -->
+                    <a class="op3 anchor" href="edit_user_profile.php">Edit Profile</a>
+                    <a class="op4 anchor" href="../Admin/logout.php">Log Out</a>
+                </div>
+            </div>
+            
+             
+        </div> 
+    </div>
+</div>
+    <!-- <div class="container">
         <h1>User Profile</h1>
 
-        <?php if ($user) : ?>
-            <div class="image-wrapper">
-                <?php if (!empty($user['profile_pic'])) : ?>
-                    <img src="../<?php echo $user['profile_pic']; ?>" alt="Profile Picture">
-                <?php else : ?>
-                    <p>No profile picture available</p>
-                <?php endif; ?>
+
             </div>
 
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
                 <input type="file" name="profile_pic" accept="image/*" required>
                 <input type="submit" value="Upload">
             </form>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <input type="submit" name="remove_profile_pic" value="Remove Profile Picture">
+            </form>
 
-            <!-- Display user information -->
             <h2>User Information</h2>
             <table class="user-info-table">
                 <tr>
@@ -168,8 +383,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile_pic"])) {
         <?php else : ?>
             <p>User not found or not a customer.</p>
         <?php endif; ?>
-    </div>
+    </div> -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">>
 </body>
 
 </html>
-

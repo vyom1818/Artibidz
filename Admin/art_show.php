@@ -6,6 +6,7 @@
     <title>Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="styletable.css">
+	<link href="artibidz-logo.png" rel="shortcut icon"/>
     <script>
         function toggleSidebar() {
             var sidebar = document.getElementById("mySidebar");
@@ -65,7 +66,7 @@
 
 .fl-table .desc{
     text-align:left;
-    width:5vw;
+    /* width:5vw; */
     /* height:10vh; */
 }
 
@@ -73,6 +74,11 @@
     text-align:center;
     padding: 12px 2px;
 }
+
+/* .hcenter{
+    display:flex;
+    justify-content:center;
+} */
 
 /* Description */
 
@@ -149,6 +155,22 @@
     cursor: pointer;
 }
 
+.vcenter{
+    display:flex;
+    /* justify-content:Center; */
+    align-items:center;
+    height:16vh;
+    width:10vw;    
+}
+
+.aname{
+    width:0vw;
+}
+
+.table-wrapper{
+    margin: 10px 50px 70px;
+}
+
 </style>
 
 </head>
@@ -190,12 +212,12 @@
                             <span>Orders</span>
                         </a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="order_return.php">
                             <i class="fa-solid fa-rotate-left"></i>
                             <span>Order Return</span>
                         </a>
-                    </li>
+                    </li> -->
                     <li>
                         <a href="city.php">
                             <i class="fa-solid fa-city"></i>
@@ -227,6 +249,12 @@
                         </a>
                     </li>
                     <li>
+                        <a href="shipping.php">
+                            <i class="fa-solid fa-truck"></i>
+                            <span>Shipping</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="feedback.php">
                             <i class="fa-regular fa-comment"></i>
                             <span>Feedback</span>
@@ -238,7 +266,7 @@
         <footer>
             <ul class="menu">
                 <li>
-                    <a href="#">
+                    <a href="../login/login.php">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <span>Logout</span>
                     </a>
@@ -255,7 +283,7 @@
                 <span class="path">Artibidz > Dashboard > Artifacts</span>
             </div>
             <div class="user-info">
-                <a href="#" class="report-list">Report List</a>
+                <a href="order_report.php" class="report-list">Report List</a>
             </div>
         </div>
       
@@ -290,11 +318,11 @@
       echo "<tr>";
       echo "<tbody>";
       echo "<td>{$row['art_id']}</td>";
-      echo "<td>{$row['art_name']}</td>";
+      echo "<td class='aname'>{$row['art_name']}</td>";
         // echo "<td class='desc'>{$row['art_desc']}</td>";
         // <!-- Inside the while loop where you display product descriptions -->
     ?>  
-        <td class="desc tooltip" onclick="showFullDescription('<?php echo $row['art_desc']; ?>')">
+        <td class="desc tooltip vcenter" onclick="showFullDescription('<?php echo $row['art_desc']; ?>')">
     <?php echo $row['art_desc']; ?>
     <span class="tooltiptext">Click to view full description</span>
       </td>
@@ -323,7 +351,7 @@
         //  echo "</td>";
 
         // Inside the while loop where you display the images -->
-<td class="desc art-images">
+<td class="desc art-images hcenter">
     <?php
     while($row1 = mysqli_fetch_array($result1)) {
         echo "<img src='../${row1['art_image']}' alt='${row1['art_image']}' onclick='showFullImage(\"${row1['art_image']}\")' width='100' height='100' />";
@@ -331,7 +359,7 @@
     ?>
 </td>
 <?php
-         
+        
         // echo "<td><a href='edit_city.php?city_id=$row[art_id]'><u>Edit</u></a> | <a href='del_art.php?art_id=$row[art_id]'><u>Delete</u></a></td>";
         echo "</tr>";
         echo "</tbody>";

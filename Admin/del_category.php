@@ -9,7 +9,7 @@
             $sql = "delete from category where cat_id='$cat_id'";
 
            $result = mysqli_query($cn,$sql);
-           $_SESSION['msg']="category deleted";
+           $_SESSION['msg']="Category Deleted";
           header("Location:category.php");
         ?>
        

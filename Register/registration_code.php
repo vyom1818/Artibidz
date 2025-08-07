@@ -78,13 +78,13 @@ if (isset($_POST['signup_submit'])) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com'; // Set the SMTP server to Gmail
         $mail->SMTPAuth = true;
-        $mail->Username = 'devlopanchal87@gmail.com'; // Replace with your Gmail address
-        $mail->Password = 'pvek zpdo whss fygu'; // Replace with your Gmail password
+        $mail->Username = 'artibidz@gmail.com'; // Replace with your Gmail address
+        $mail->Password = 'kdwq lxfi eodu paro'; // Replace with your Gmail password
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
 
         //Recipients
-        $mail->setFrom('devlopanchal87@gmail.com', 'Artibidz'); // Replace with your Gmail address and your name
+        $mail->setFrom('artibidz@gmail.com', 'Artibidz'); // Replace with your Gmail address and your name
         $mail->addAddress($to);
 
         //Content

@@ -6,6 +6,7 @@
     <title>Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="stylecity.css">
+    <link href="artibidz-logo.png" rel="shortcut icon"/>
     <script>
         function toggleSidebar() {
             var sidebar = document.getElementById("mySidebar");
@@ -40,6 +41,59 @@
 
 .logo img{
     margin-top:2vh;
+}
+
+.body-wrapper{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+}
+
+.search{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:#324960;
+    width:74vw;
+    color:white;
+}
+
+.take-input{
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    padding:5px;
+}
+
+input[type="submit"]{
+    background:#fff;
+    border:1px solid white;
+    height:3vh;
+    width:6vw;
+    border-radius:2px;
+    color:black;
+    margin:1vh 1vw;
+}
+
+input[type="submit"]:hover{
+    cursor:pointer;
+}
+
+input[type="text"]{
+    background:transparent;
+    border-bottom:1px solid #fff;
+    color:#fff;
+}
+
+.show-result{
+    width: 41vw;
+    text-align: center;
+}
+
+label{
+    margin:1vh 1vw;
 }
 </style>
 </head>
@@ -81,12 +135,12 @@
                 <span>Orders</span>
                 </a>
             </li>
-            <li>
+            <!-- <li>
                 <a href="order_return.php">
                 <i class="fa-solid fa-rotate-left"></i>
                 <span>Order Return</span>
                 </a>
-            </li>
+            </li> -->
             <li>
                 <a href="city.php">
                     <i class="fa-solid fa-city"></i>
@@ -119,6 +173,12 @@
                 </a>
             </li>
             <li>
+                <a href="shipping.php">
+                    <i class="fa-solid fa-truck"></i>
+                    <span>Shipping</span>
+                </a>
+            </li>
+            <li>
                 <a href="feedback.php">
                     <i class="fa-regular fa-comment"></i>
                     <span>Feedback</span>
@@ -130,7 +190,7 @@
         <footer>
         <ul class="menu">
             <li>
-                <a href="#">
+                <a href="../login/login.php">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>Logout</span>
                 </a>
@@ -147,7 +207,7 @@
                 <span class="path">Artibidz > Dashboard > Category</span>
             </div>
             <div class="user-info">
-                <a href="#" class="report-list">Report List</a>
+                <a href="order_report.php" class="report-list">Report List</a>
             </div>
         </div>
 
@@ -155,18 +215,26 @@
 
             
     <form action="categoryins.php" method="post">
-        Category:
-        <input type="text" name="cat_name" placeholder="Enter Catgory Name">
-        <input type="submit" value="Submit" name="btn">
-    
-    <?php
-    if(isset($_SESSION['msg'])){
-        echo $_SESSION['msg'];
-        unset ($_SESSION['msg']);
-    }
-    ?>
-    </form>
-</table>
+        <div class="search">
+
+            <div class="take-input">
+                
+                <label>
+                    Category:
+                    <input type="text" name="cat_name">
+                </label>
+                <input type="submit" value="Submit" name="btn">
+            </div>
+            
+        </form>
+            <div class="show-result">
+                
+                <?php
+                if(isset($_SESSION['msg'])){
+                    echo $_SESSION['msg'];
+                    unset ($_SESSION['msg']);
+                }
+                ?>
 <?php
      $cn=mysqli_connect("localhost","root","","artibidz") or die("Check connection");
      $sql = "select * from category";
@@ -174,8 +242,12 @@
      
      echo "<br>";
      
-     echo mysqli_num_rows($result)." records found";
-     echo "<div class='table-wrapper'>";
+    // echo mysqli_num_rows($result)." records found";?>
+            </div>
+        </div>
+</table>
+<?php
+    echo "<div class='table-wrapper'>";
      echo "<table class='fl-table'>";
      echo "<thead>";
      echo "<tr>"; 
